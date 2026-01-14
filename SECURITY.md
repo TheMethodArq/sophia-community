@@ -1,32 +1,39 @@
-# Security Policy & Zero Trust Architecture
+# Security Policy: Governance as a Security Control
 
-## 1. Core Philosophy: Zero Trust
-The Sophia Code Community platform operates under a **Zero Trust** assumption. No artifact, user, or input is trusted by default. Verification is explicit and continuous.
+## 1. Core Philosophy: Zero Trust through Governance
+The security of the Cognexa ecosystem is not based on perimeter defense, but on **provable governance**. We operate under a Zero Trust assumption, where no artifact, user, or execution engine is trusted by default. Verification is explicit, continuous, and enforced by **Sophia**, the system's governance authority.
 
-## 2. Security Controls
+## 2. Security Controls Enforced by Sophia
 
-### 2.1 Artifact Guardrails
-- **Risk:** Malicious code execution or sensitive data exfiltration via copied artifacts.
-- **Control:** **Intentional Friction**. Critical actions (like "Copy Code") are intercepted by a governance modal requiring explicit user acknowledgement of risk.
-- **Implementation:** `src/App.tsx` handles the `showWarning` state. This logic must NOT be bypassed by generic clipboard libraries.
+Our security posture is a direct manifestation of Sophia's governance. Features that might appear as simple UI friction are, in fact, critical security controls.
 
-### 2.2 Content Security
-- **Immutability:** All artifacts include a `contentHash` (SHA-256). In production, the client must independently verify that the retrieved content matches this hash before display.
-- **Sanitization:** All user-generated text is rendered via React's safe-by-default escaping. Dangerous HTML rendering (`dangerouslySetInnerHTML`) is strictly prohibited.
+### 2.1 Gate Enforcement
+- **Risk:** Uncontrolled execution of code, leading to malicious actions or unintended side effects.
+- **Control:** **Governance Gates**. Before any execution can occur, specific conditions must be met. The "Security Warning" modal in this reference implementation is an example of Sophia enforcing a gate.
+- **Mechanism:** Sophia blocks the transition from the `Contract` phase to the `Execution` phase until the gate's requirements (e.g., user acknowledgement of risk) are met and recorded. This action is auditable.
+
+### 2.2 Intent Locking & Immutability
+- **Risk:** Scope creep and malicious code injection during the development lifecycle.
+- **Control:** **Locked Intent & Content Hashing**.
+- **Mechanism:**
+    1.  Sophia locks the `Intent` artifact, preventing changes after approval.
+    2.  All subsequent artifacts (like `Contracts`) contain a `contentHash` (SHA-256). Execution engines *must* verify this hash before processing, ensuring the work being done matches the work that was approved.
 
 ### 2.3 Dependency Management
-- **Audit:** Regular execution of `npm audit`.
-- **Locking:** `package-lock.json` is committed to ensure deterministic builds.
-- **Minimalism:** Dependencies are scrutinized before addition. We prefer native browser APIs over heavy libraries where possible.
+- **Risk:** Supply chain attacks via compromised dependencies.
+- **Control:** Strict dependency auditing and version locking.
+- **Mechanism:**
+    - `npm audit` is a required step in the CI pipeline.
+    - `package-lock.json` is committed to ensure deterministic, auditable builds. New dependencies require a formal review process.
 
 ## 3. Vulnerability Reporting
 **Do not open public GitHub issues for security vulnerabilities.**
 
-If you discover a potential security failure:
-1.  Email **security@thalamus.io** (Mock contact).
-2.  Include a proof-of-concept.
+If you discover a potential security failure in the Cognexa framework or this reference implementation:
+1.  Email **security@thalamus.io** (placeholder).
+2.  Provide a clear description and a proof-of-concept.
 3.  We adhere to a 90-day responsible disclosure window.
 
 ## 4. Development Security
-- **Secrets:** No API keys or secrets are committed to the repository. Use `.env` files (which are git-ignored).
-- **Mock Data:** The current `mockData.ts` contains no real personal data (PII).
+- **Secrets:** No secrets are ever to be committed to the repository. Use `.env` files for local development, which are specified in `.gitignore`.
+- **Data Integrity:** Mock data (`mockData.ts`) must not contain any personally identifiable information (PII).

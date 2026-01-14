@@ -1,71 +1,71 @@
-# Architecture Reference
+# Cognexa: A Cognitive Governance System
 
-**Version:** 1.0.0  
-**Status:** Approved for MVP  
+**Version:** 2.0.0  
+**Status:** Strategic Alignment  
 **Last Updated:** 2024-01-14
 
 ## 1. Executive Summary
 
-The **Sophia Code Community** platform is a high-assurance governance interface designed to facilitate the discovery, verification, and usage of cryptographic artifacts (Intents, Gates, Contracts). The system adheres to the **Thalamus Enterprise Standards**, prioritizing security ("Zero Trust"), component modularity, and strict type safety.
+Cognexa is a cognitive governance system designed to bring structure, intent, and accountability to complex work—starting with software delivery. It solves a critical problem in the modern, AI-assisted workplace: **decisions, intent, and accountability are scattered, implicit, and unverifiable.**
 
-## 2. System Overview
+Cognexa changes this by treating **thinking as a first-class artifact**. It enforces a governed lifecycle where intent is explicit, decisions are recorded, execution is constrained, and outcomes are provable.
 
-### 2.1 High-Level Context
-The application serves as the frontend presentation layer for the Sophia Network. It interacts with a mock backend (MVP) which will be replaced by a decentralized registry and a federated GraphQL API in the production phase.
+This document outlines the architecture of the Cognexa system and the role of its core components.
 
-### 2.2 Architectural Pattern
-We utilize a **Component-Based Architecture** powered by React 18, leveraging **Atomic Design principles** for UI organization.
+## 2. System Architecture: The Three Layers
 
-- **Presentation Layer:** React + Tailwind CSS (Glassmorphism)
-- **Data Layer:** TypeScript Data Models (currently Mock Data, transitioning to TanStack Query)
-- **Security Layer:** Client-side "Guardrails" and "Governance Gates"
+Cognexa intentionally separates governance from execution. This separation is the core of its architecture and the primary defense against the runaway scope and untraceable changes common in AI tooling.
 
-## 3. Technology Stack
+![Cognexa Architecture Diagram](https://github.com/TheMethodArq/sophia-community/assets/1/b694a9d7-832f-4c07-88f3-8557e937397b)
 
-| Component | Technology | Rationale |
-|-----------|------------|-----------|
-| **Core** | React 18 | Industry standard, concurrent rendering capabilities. |
-| **Language** | TypeScript 5.x | Strict type safety for financial/governance data. |
-| **Build System** | Vite | High-performance dev server and optimized production bundles. |
-| **Styling** | Tailwind CSS 3.x | Utility-first, configured for "Deep Space" design tokens. |
-| **State** | Local (MVP) -> Zustand | Minimal boilerplate, scalable global state. |
-| **Network** | Mock -> TanStack Query | Caching, deduplication, and optimistic updates. |
+### Layer 1: Cognexa (The System)
 
-## 4. Directory Structure Strategy
+This is the overarching framework that defines the **structure of thought**. It is not an application, but a protocol for governed work.
 
-The codebase follows a `feature-based` grouping combined with strict `layer` separation:
+- **Defines:** The lifecycle of work (e.g., `Intent -> Contract -> Execution -> Verification`).
+- **Defines:** The artifact model (`Intents`, `Gates`, `Contracts`, `Tasks`).
+- **Defines:** The rules that govern transitions between phases.
 
-```
-src/
-├── components/         # View Layer
-│   ├── ui/             # Atomic, dumb components (Buttons, Cards)
-│   ├── layout/         # Structural components (Shells, Grids)
-│   └── features/       # Smart, domain-aware components (ArtifactCard)
-├── hooks/              # Logic Layer (Encapsulated behavior)
-├── lib/                # Infrastructure Layer (API clients, Utils)
-├── store/              # State Layer (Global store definitions)
-└── types/              # Domain Layer (Shared Interface Definitions)
-```
+### Layer 2: Sophia (Governance & Authority)
 
-## 5. Key Design Decisions (ADRs)
+Sophia lives inside Cognexa as the **faculty of judgment**. She is the decision-making authority that ensures the Cognexa protocol is followed.
 
-### ADR-001: Tailwind for Design System
-- **Decision:** Use Tailwind CSS with custom configuration for Thalamus Glassmorphism.
-- **Context:** CSS-in-JS adds runtime overhead. Utility classes provide consistency and smaller bundle sizes.
-- **Consequence:** Strict adherence to `tailwind.config.js` tokens is required. Magic numbers in classes are forbidden.
+- **Responsibilities:**
+    - Creating and locking `Intent`.
+    - Enforcing `Gates` (e.g., "requirements must be approved before coding begins").
+    - Verifying artifact hashes and provenance.
+    - Approving or rejecting phase transitions.
+    - Recording all decisions for audit and learning.
+- **Key Characteristic:** Sophia is intentionally **conservative**. She is designed to prevent accidental progress. She does not execute work; she governs the conditions under which work is *allowed* to happen.
 
-### ADR-002: Zero Trust UI Patterns
-- **Decision:** Implement explicit friction (modals) before sensitive actions (e.g., Copy Code).
-- **Context:** Users must be cognitively aware of security risks when interacting with governance artifacts.
-- **Consequence:** "Copy Code" is not immediate; it requires a confirmed intent action.
+### Layer 3: Execution Engines
 
-## 6. Data Flow
+This layer represents the **labor** force. Execution is always subordinate to Sophia's governance.
 
-1.  **Read:** Component requests data -> Hook (Mock/Query) -> Data Provider -> Component
-2.  **Write:** Component triggers action -> Validation Layer -> Mutation Hook -> Optimistic UI Update -> Server Sync
+- **Examples:**
+    - CLI-based AI coding tools (e.g., this reference implementation).
+    - IDE-integrated agents.
+    - Human contributors following a governed workflow.
+    - Future scaled runtimes like `Synaptica`.
+- **Function:** To perform the "how" of the work, but only after Sophia has approved the "what" and "why".
 
-## 7. Scalability & Performance
+## 3. The Artifact Model
 
-- **Code Splitting:** Route-based splitting (via React Router/Vite).
-- **Asset Optimization:** SVGs for iconography, WebP for future imagery.
-- **Render Optimization:** Memoization of expensive governance graph visualizations (future).
+Cognexa's governance is built upon a foundation of verifiable artifacts.
+
+- **Intent:** A clear, human-readable declaration of a goal, locked by Sophia to prevent scope creep.
+- **Gate:** An explicit checkpoint that must be satisfied before proceeding. Sophia enforces these gates.
+- **Contract:** A machine-verifiable specification of the work to be done, derived from the Intent.
+- **Task:** A unit of execution assigned to an Execution Engine.
+
+## 4. Key Design Decisions (ADRs)
+
+### ADR-001: Separation of Authority from Labor
+- **Decision:** The system strictly separates the governance layer (Sophia) from the execution layer.
+- **Context:** Collapsing these roles is the root cause of hallucinated decisions, untraceable changes, and broken trust in modern AI tools.
+- **Consequence:** Execution is a commodity. The core value lies in the provable governance provided by Cognexa and Sophia.
+
+### ADR-002: Artifact-Driven, Not AI-Driven
+- **Decision:** The system is built around a verifiable chain of artifacts, not an opaque, black-box AI.
+- **Context:** An AI's "reasoning" is often a post-hoc justification. An artifact chain is a provable record of decisions.
+- **Consequence:** The system is auditable by design. It optimizes for correctness and defensibility, not just speed.

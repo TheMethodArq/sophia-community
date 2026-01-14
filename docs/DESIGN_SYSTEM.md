@@ -4,7 +4,7 @@
 **Theme:** "Deep Space" / "Cyber-Physical"
 
 ## 1. Philosophy
-The design system reflects the **Sophia Code** ethos: transparency, depth, and structural integrity. The "Glass" aesthetic is not just stylistic; it represents the transparency of the governance layer overlaying the "Deep Space" of the underlying protocol.
+The design system reflects the **Cognexa** ethos: transparency, depth, and structural integrity. The "Glass" aesthetic is not just stylistic; it represents Sophia's transparent governance layer overlaying the "Deep Space" of the underlying protocol complexity. Every visual element should reinforce clarity, structure, and intentionality.
 
 ## 2. Color Palette
 
