@@ -14,7 +14,7 @@ import { copyDefaultContent, ensureSophiaDirs } from "../core/content-manager.js
 import { installGitHooks } from "../core/git-hooks.js";
 import { seedMemory } from "../core/memory-seeds.js";
 import { syncAgent, buildSophiaContext } from "../core/adapter-engine.js";
-import { initializeAutoClaudeIntegration, isAutoClaudeInstalled } from "../core/auto-claude-integration.js";
+
 
 export const initCommand = new Command("init")
   .description("Initialize Sophia governance in this project")
@@ -219,14 +219,14 @@ export const initCommand = new Command("init")
     // Obsidian integration
     const obsSpinner = ora("Setting up Obsidian integration...").start();
     try {
-      const vaultPath = process.env.OBSIDIAN_VAULT_PATH || 
+      const vaultPath = process.env.OBSIDIAN_VAULT_PATH ||
         path.join(process.env.HOME || "~", "Documents", "Obsidian Vault");
-      
+
       if (fs.existsSync(path.join(vaultPath, ".obsidian"))) {
         // Create evidence directory
         const evidenceDir = path.join(process.env.HOME || "~", ".auto-claude", "evidence");
         fs.mkdirSync(evidenceDir, { recursive: true });
-        
+
         obsSpinner.succeed("Obsidian integration ready");
         console.log(chalk.dim(`  Vault: ${vaultPath}`));
       } else {
@@ -236,26 +236,6 @@ export const initCommand = new Command("init")
       obsSpinner.warn("Obsidian setup skipped");
     }
 
-    // Auto-Claude integration (silent/background)
-    const acSpinner = ora("Checking Auto-Claude integration...").start();
-    try {
-      const acInstalled = isAutoClaudeInstalled();
-      if (acInstalled) {
-        const acResult = await initializeAutoClaudeIntegration(projectRoot);
-        if (acResult.installed && acResult.serviceRunning) {
-          acSpinner.succeed("Auto-Claude integration active");
-        } else if (acResult.installed) {
-          acSpinner.warn("Auto-Claude configured (service not running)");
-        } else {
-          acSpinner.stop();
-        }
-      } else {
-        acSpinner.stop();
-      }
-    } catch {
-      acSpinner.stop();
-    }
-
     console.log();
     console.log(chalk.green.bold("Sophia initialized!"));
     console.log();
@@ -263,7 +243,4 @@ export const initCommand = new Command("init")
     console.log(`  ${chalk.cyan("sophia status")}     — View project status`);
     console.log(`  ${chalk.cyan("sophia sync")}       — Re-sync governance after config changes`);
     console.log(`  ${chalk.cyan("sophia dashboard")}  — Open web dashboard`);
-    if (isAutoClaudeInstalled()) {
-      console.log(`  ${chalk.cyan("sophia auto-claude status")} — Check Auto-Claude integration`);
-    }
   });
