@@ -435,3 +435,217 @@ export interface Encounter {
   times_seen: number;
   last_seen_at: string;
 }
+
+// ===== Build Pipeline Types (Sprint 2) =====
+
+export type BuildStatus = "pending" | "running" | "paused" | "completed" | "failed";
+
+export interface BuildConfig {
+  projectPath: string;
+  planPath: string;
+  options: {
+    dryRun?: boolean;
+    autoApprove?: boolean;
+    maxTokenBudget?: number;
+    modelPreference?: ModelType;
+    checkpointInterval?: number;
+  };
+}
+
+export interface BuildState {
+  buildId: string;
+  status: BuildStatus;
+  planPath: string;
+  currentSprint: number;
+  currentTask: number;
+  completedTasks: string[];
+  failedTasks: string[];
+  skippedTasks: string[];
+  tokenUsage: TokenUsage;
+  startedAt: string;
+  lastCheckpointAt?: string;
+  completedAt?: string;
+  error?: string;
+}
+
+// ===== Checkpoint Types (Sprint 2) =====
+
+export interface Checkpoint {
+  id: string;
+  buildId: string;
+  state: CheckpointState;
+  createdAt: string;
+}
+
+export interface CheckpointState {
+  buildState: BuildState;
+  taskResults: TaskResult[];
+  fileChanges: FileChange[];
+  decisions: CheckpointDecision[];
+  pendingActions: ActionRequest[];
+}
+
+export interface TaskResult {
+  taskId: string;
+  status: "success" | "failed" | "skipped";
+  output?: string;
+  error?: string;
+  tokensUsed: TokenUsage;
+  duration: number;
+  completedAt: string;
+}
+
+export interface FileChange {
+  path: string;
+  changeType: "created" | "modified" | "deleted";
+  diff?: string;
+  linesAdded: number;
+  linesRemoved: number;
+}
+
+export interface CheckpointDecision {
+  id: string;
+  taskId: string;
+  decision: string;
+  rationale: string;
+  madeAt: string;
+}
+
+// ===== Token Management Types (Sprint 2) =====
+
+export type ModelType = "haiku" | "sonnet" | "opus";
+
+export interface TokenUsage {
+  input: number;
+  output: number;
+  total: number;
+  cost: number;
+}
+
+export interface TaskBudget {
+  taskId: string;
+  estimated: number;
+  actual: number;
+  remaining: number;
+  model: ModelType;
+}
+
+export interface ModelRoutingEntry {
+  taskType: string;
+  defaultModel: ModelType;
+  fallbackModel?: ModelType | null;
+  maxTokens: number;
+  costPerInputToken: number;
+  costPerOutputToken: number;
+}
+
+export interface ModelRoutingTable {
+  entries: ModelRoutingEntry[];
+  defaultModel: ModelType;
+  budgetLimit: number;
+}
+
+// ===== Approval Router Types (Sprint 2) =====
+
+export type ActionType =
+  | "file_write"
+  | "file_delete"
+  | "dependency_add"
+  | "command_exec"
+  | "git_commit"
+  | "config_change";
+
+export type ActionClassification =
+  | "auto_approve"
+  | "inform_only"
+  | "human_required";
+
+export interface ActionRequest {
+  id: string;
+  buildId: string;
+  taskId: string;
+  actionType: ActionType;
+  description: string;
+  details: {
+    path?: string;
+    content?: string;
+    command?: string;
+    dependency?: string;
+    version?: string;
+  };
+  classification: ActionClassification;
+  riskScore: number;
+  requestedAt: string;
+  resolvedAt?: string;
+  approved?: boolean;
+  approvedBy?: "auto" | "human";
+  reason?: string;
+}
+
+export interface Escalation {
+  id: string;
+  actionId: string;
+  buildId: string;
+  reason: string;
+  severity: "low" | "medium" | "high" | "critical";
+  context: {
+    taskId: string;
+    taskDescription: string;
+    affectedFiles: string[];
+    potentialImpact: string;
+  };
+  escalatedAt: string;
+  resolvedAt?: string;
+  resolution?: "approved" | "rejected" | "modified";
+  humanResponse?: string;
+}
+
+// ===== Agent Adapter Types (Sprint 2) =====
+
+export interface AgentAdapter {
+  name: string;
+  version: string;
+  supportedAgents: string[];
+  initialize: (context: AgentContext) => Promise<void>;
+  execute: (task: string, context: AgentContext) => Promise<AgentResult>;
+  cleanup: () => Promise<void>;
+}
+
+export interface AgentContext {
+  buildId: string;
+  taskId: string;
+  projectPath: string;
+  workingDirectory: string;
+  environment: Record<string, string>;
+  claims: FileClaim[];
+  policies: Policy[];
+  constraints: {
+    maxTokens: number;
+    timeout: number;
+    allowedPaths: string[];
+    blockedPaths: string[];
+  };
+  previousResults?: TaskResult[];
+  sessionInstructions?: string;
+}
+
+export interface AgentResult {
+  success: boolean;
+  output: string;
+  error?: string;
+  tokensUsed: TokenUsage;
+  filesChanged: FileChange[];
+  decisionsLogged: CheckpointDecision[];
+  warnings?: string[];
+  suggestions?: string[];
+}
+
+export interface FileClaim {
+  path: string;
+  claimType: ClaimType;
+  claimedBy: string;
+  buildId: string;
+  taskId: string;
+  claimedAt: string;
+  releasedAt?: string;
+}

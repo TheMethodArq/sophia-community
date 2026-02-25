@@ -22,7 +22,10 @@ import { cleanCommand } from "./commands/clean.js";
 import { dashboardCommand } from "./commands/dashboard.js";
 import { watchCommand } from "./commands/watch.js";
 import { updateCommand } from "./commands/update.js";
-import { autoClaudeCommand } from "./commands/auto-claude.js";
+import { buildCommand, buildStatusCommand } from "./commands/build.js";
+import { changeRequestCommand } from "./commands/change-request.js";
+import { intakeCommand, intakeListCommand, intakeResumeCommand } from "./commands/intake.js";
+import { githubCommand } from "./commands/github.js";
 import { enforceVersion } from "./core/version-manager.js";
 
 const program = new Command();
@@ -63,6 +66,12 @@ program.addCommand(cleanCommand);
 program.addCommand(dashboardCommand);
 program.addCommand(watchCommand);
 program.addCommand(updateCommand);
-program.addCommand(autoClaudeCommand);
+program.addCommand(buildCommand);
+program.addCommand(buildStatusCommand);
+program.addCommand(changeRequestCommand);
+program.addCommand(intakeCommand);
+program.addCommand(intakeListCommand);
+program.addCommand(intakeResumeCommand);
+program.addCommand(githubCommand);
 
 program.parse();
